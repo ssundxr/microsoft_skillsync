@@ -23,7 +23,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/seekats:latest .
+          docker build --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} -t ${{ secrets.ACR_LOGIN_SERVER }}/seekats:latest .
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/seekats:latest
 
       - name: Log in to Azure
