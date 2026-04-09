@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install Python dependencies
 COPY requirements.txt .
 ARG GITHUB_TOKEN
+RUN if [ -z "$GITHUB_TOKEN" ]; then echo "ERROR: GITHUB_TOKEN build-arg is empty! Check your GitHub Secrets." && exit 1; fi
 RUN echo "machine github.com login x-access-token password ${GITHUB_TOKEN}" > /root/.netrc && \
     chmod 600 /root/.netrc
 RUN pip install --no-cache-dir -r requirements.txt
