@@ -38,10 +38,7 @@ def request_otp(body: OtpRequest):
     return {"message": "OTP has been sent to your email and phone."}
 
 @router.post("/register")
-def register_candidate(body: OtpVerify, db: Session = Depends(get_db)):
-    if OTPS.get(body.email) != body.otp:
-        raise HTTPException(status_code=400, detail="Invalid or expired OTP.")
-    
+def register_candidate(body: CandidateRegister, db: Session = Depends(get_db)):
     existing = db.scalar(select(Candidate).where(Candidate.email == body.email))
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered.")
@@ -54,9 +51,6 @@ def register_candidate(body: OtpVerify, db: Session = Depends(get_db)):
     db.add(candidate)
     db.commit()
     db.refresh(candidate)
-    
-    # Clear OTP
-    del OTPS[body.email]
     
     token = create_candidate_access_token(candidate.id, settings.secret_key)
     return TokenResponse(
