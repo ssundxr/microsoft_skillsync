@@ -39,5 +39,12 @@ jobs:
 
       - name: Post-Deployment Config
         run: |
-          az webapp config appsettings set --name ${{ secrets.AZURE_WEBAPP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP || 'CodeRAG-Group' }} --settings WEBSITES_PORT=8080
+          az webapp config appsettings set --name ${{ secrets.AZURE_WEBAPP_NAME }} --resource-group ${{ secrets.AZURE_RESOURCE_GROUP || 'CodeRAG-Group' }} --settings \
+            WEBSITES_PORT=8080 \
+            GEMINI_API_KEY="${{ secrets.GEMINI_API_KEY }}" \
+            ACS_CONNECTION_STRING="${{ secrets.ACS_CONNECTION_STRING }}" \
+            ACS_SENDER_EMAIL="${{ secrets.ACS_SENDER_EMAIL }}" \
+            TWILIO_ACCOUNT_SID="${{ secrets.TWILIO_ACCOUNT_SID }}" \
+            TWILIO_AUTH_TOKEN="${{ secrets.TWILIO_AUTH_TOKEN }}" \
+            TWILIO_PHONE_NUMBER="${{ secrets.TWILIO_PHONE_NUMBER }}"
           echo "Deployment successful to ${{ secrets.AZURE_WEBAPP_NAME }}"
