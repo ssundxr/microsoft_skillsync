@@ -13,46 +13,30 @@ from .database import init_db
 from .routers import api, auth
 
 
-import subprocess
-import os
-import time
-import httpx
-import sys
-from fastapi import Request
-from fastapi.responses import StreamingResponse
+from datasette.app import Datasette
+
+# Initialize Datasette for visual DB exploration
+db_path = settings.database_url.replace("sqlite:///", "")
+if not db_path.startswith("/") and ":" not in db_path:
+    # Relative path, make it absolute relative to BASE_DIR
+    db_path_abs = str(BASE_DIR / db_path)
+else:
+    db_path_abs = db_path
+
+# Create the Datasette instance with the correct base path
+ds = Datasette(
+    [db_path_abs],
+    settings={
+        "base_url": "/db-explorer/",
+        "template_debug": True if not os.getenv("PROD") else False
+    }
+)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Initialize DB
     init_db()
-    
-    # Start Datasette in the background on port 8001
-    db_path = settings.database_url.replace("sqlite:///", "")
-    if not db_path.startswith("/") and ":" not in db_path:
-        db_path = str(BASE_DIR / db_path)
-    
-    print(f"Starting Datasette on {db_path} with base-url /db-explorer/")
-    try:
-        # Use sys.executable to ensure we use the same python environment
-        # --setting base_url /db-explorer/ ensures internal links work with the proxy
-        proc = subprocess.Popen([
-            sys.executable, "-m", "datasette", "serve",
-            db_path, 
-            "--port", "8001", 
-            "--host", "127.0.0.1",
-            "--setting", "base_url", "/db-explorer/",
-            "--cors"
-        ])
-        app.state.db_proc = proc
-    except Exception as e:
-        print(f"WARNING: Failed to start Datasette: {e}")
-        app.state.db_proc = None
-    
     yield
-    
-    # Cleanup
-    if app.state.db_proc:
-        app.state.db_proc.terminate()
 
 app = FastAPI(
     title="SeekATS Assessment Recruiter API",
@@ -61,41 +45,9 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# ── Database Explorer Proxy (Datasette) ──────────────────────────────────
-@app.api_route("/db-explorer/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
-async def db_explorer_proxy(request: Request, path: str):
-    # Datasette is configured with base_url /db-explorer/, so we proxy to the root
-    # but include the /db-explorer/ prefix in the internal request
-    url = f"http://127.0.0.1:8001/db-explorer/{path}"
-    
-    if request.query_params:
-        url += f"?{request.query_params}"
-    
-    client = httpx.AsyncClient(timeout=30.0)
-    try:
-        # Build the proxy request
-        content = await request.body()
-        headers = {k: v for k, v in request.headers.items() if k.lower() not in ("host", "content-length", "accept-encoding")}
-        
-        # We use a streaming request to handle potentially large data and avoid StreamConsumed
-        proxy_req = client.build_request(
-            method=request.method,
-            url=url,
-            headers=headers,
-            content=content
-        )
-        
-        proxy_resp = await client.send(proxy_req, stream=True)
-        
-        return StreamingResponse(
-            proxy_resp.aiter_raw(),
-            status_code=proxy_resp.status_code,
-            headers={k: v for k, v in proxy_resp.headers.items() if k.lower() not in ("content-encoding", "transfer-encoding")},
-            background=proxy_resp.aclose # Close response after streaming finishes
-        )
-    except Exception as e:
-        await client.aclose()
-        return HTMLResponse(f"<h3>Database Explorer Unavailable</h3><p>{e}</p>", status_code=503)
+# ── Database Explorer (Native ASGI Mount) ───────────────────────────────
+# This is the most robust way to integrate Datasette: no proxy, no extra ports.
+app.mount("/db-explorer", ds.app())
 
 app.add_middleware(
     CORSMiddleware,
