@@ -128,9 +128,20 @@ export default function PostJobPage() {
     setError('')
     try {
       const fd = new FormData()
-      const payload = { ...form }
-      // Convert numeric fields
-      const toNum = (o, k) => { if (o[k] !== '') o[k] = Number(o[k]) || null }
+      const payload = JSON.parse(JSON.stringify(form)) // Deep copy to safely mutate
+      
+      // Robust numeric converter: empty/invalid strings -> null, valid -> Number
+      const toNum = (obj, key) => {
+        if (!obj) return
+        const val = obj[key]
+        if (val === '' || val === null || val === undefined) {
+          obj[key] = null
+        } else {
+          const n = Number(val)
+          obj[key] = isNaN(n) ? null : n
+        }
+      }
+
       toNum(payload.salary_details, 'minimum_salary')
       toNum(payload.salary_details, 'maximum_salary')
       toNum(payload.candidate_profile.age_range, 'min')
@@ -139,6 +150,7 @@ export default function PostJobPage() {
       toNum(payload.experience_requirement.work_experience_years, 'max')
       toNum(payload.experience_requirement.gcc_experience_years, 'min')
       toNum(payload.experience_requirement.gcc_experience_years, 'max')
+      toNum(payload.job_details, 'number_of_vacancies')
 
       fd.append('payload', JSON.stringify(payload))
       await api.createJob(fd)
