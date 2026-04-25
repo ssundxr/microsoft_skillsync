@@ -8,6 +8,7 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:8000',
       '/media': 'http://localhost:8000',
+      '/db-explorer': 'http://localhost:8000',
     },
   },
   build: {
