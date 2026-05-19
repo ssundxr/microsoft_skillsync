@@ -1,0 +1,74 @@
+{
+  "family": "assessment-recruiter",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "<ECS_EXECUTION_ROLE_ARN>",
+  "taskRoleArn": "<ECS_TASK_ROLE_ARN>",
+  "containerDefinitions": [
+    {
+      "name": "assessment-recruiter",
+      "image": "<ECR_IMAGE_URI>",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        { "name": "PORT", "value": "80" },
+        { "name": "APP_NAME", "value": "SeekATS Assessment Recruiter" },
+        { "name": "ADMIN_USERNAME", "value": "admin" },
+        { "name": "ADMIN_PASSWORD", "value": "Admin@123" },
+        { "name": "ADMIN_DISPLAY_NAME", "value": "Assessment Admin" },
+        { "name": "SECRET_KEY", "value": "change-me" },
+        { "name": "DATABASE_URL", "value": "sqlite:////data/assessment_recruiter.db" },
+        { "name": "UPLOAD_DIR", "value": "/data/uploads" },
+        { "name": "GEMINI_API_KEY", "value": "<GEMINI_API_KEY>" },
+        { "name": "ACS_CONNECTION_STRING", "value": "<ACS_CONNECTION_STRING>" },
+        { "name": "ACS_SENDER_EMAIL", "value": "<ACS_SENDER_EMAIL>" },
+        { "name": "TWILIO_ACCOUNT_SID", "value": "<TWILIO_ACCOUNT_SID>" },
+        { "name": "TWILIO_AUTH_TOKEN", "value": "<TWILIO_AUTH_TOKEN>" },
+        { "name": "TWILIO_PHONE_NUMBER", "value": "<TWILIO_PHONE_NUMBER>" }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "app-data",
+          "containerPath": "/data",
+          "readOnly": false
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/assessment-recruiter",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "healthCheck": {
+        "command": ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:80/healthz')\" || exit 1"],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 60
+      }
+    }
+  ],
+  "volumes": [
+    {
+      "name": "app-data",
+      "efsVolumeConfiguration": {
+        "fileSystemId": "<EFS_FILE_SYSTEM_ID>",
+        "transitEncryption": "ENABLED",
+        "authorizationConfig": {
+          "accessPointId": "<EFS_ACCESS_POINT_ID>",
+          "iam": "ENABLED"
+        }
+      }
+    }
+  ]
+}

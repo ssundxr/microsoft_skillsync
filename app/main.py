@@ -46,6 +46,11 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
+@app.get("/healthz", include_in_schema=False)
+async def health_check():
+    return {"status": "ok"}
+
 # ── Database Explorer (Native ASGI Mount) ───────────────────────────────
 # This is the most robust way to integrate Datasette: no proxy, no extra ports.
 app.mount("/db-explorer", ds.app())
