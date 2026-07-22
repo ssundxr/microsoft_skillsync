@@ -195,6 +195,8 @@ class CandidateResponse(BaseModel):
     id: int
     email: str
     display_name: str
+    profile_details: dict[str, Any] | None = None
+    resume_url: str | None = None
     created_at: datetime
 
     class Config:

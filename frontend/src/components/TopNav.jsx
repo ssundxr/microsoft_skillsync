@@ -41,6 +41,7 @@ export default function TopNav() {
         )}
         {!isCandidate && (
           <>
+            <button className={location.pathname.includes('/candidates') ? 'active' : ''} onClick={() => navigate('/admin/candidates')}>Candidates</button>
             <button className={location.pathname.includes('/post-job') ? 'active' : ''} onClick={() => navigate('/admin/post-job')}>Post Job</button>
             <button 
               className="mono" 
