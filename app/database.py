@@ -33,21 +33,30 @@ def get_db() -> Generator[Session, None, None]:
 
 
 def init_db() -> None:
-    from .auth import hash_password
-    from .models import AdminUser
+    import logging
+    logger = logging.getLogger("uvicorn.error")
 
-    Base.metadata.create_all(bind=engine)
+    try:
+        from .auth import hash_password
+        from .models import AdminUser
 
-    with SessionLocal() as db:
-        existing_admin = db.scalar(select(AdminUser).where(AdminUser.username == settings.admin_username))
-        if existing_admin:
-            return
+        Base.metadata.create_all(bind=engine)
 
-        db.add(
-            AdminUser(
-                username=settings.admin_username,
-                display_name=settings.admin_display_name,
-                password_hash=hash_password(settings.admin_password),
+        with SessionLocal() as db:
+            existing_admin = db.scalar(select(AdminUser).where(AdminUser.username == settings.admin_username))
+            if existing_admin:
+                return
+
+            db.add(
+                AdminUser(
+                    username=settings.admin_username,
+                    display_name=settings.admin_display_name,
+                    password_hash=hash_password(settings.admin_password),
+                )
             )
-        )
-        db.commit()
+            db.commit()
+            logger.info("Database initialized successfully.")
+    except Exception as e:
+        logger.error(f"Database initialization failed during startup: {e}")
+        logger.warning("Application will continue starting, but database operations may fail until DB connection issue is resolved.")
+

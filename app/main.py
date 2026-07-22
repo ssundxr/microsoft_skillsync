@@ -1,5 +1,16 @@
 from __future__ import annotations
 
+import os
+import socket
+
+# Force IPv4 DNS resolution for cloud environments (like Azure App Service) without IPv6 outbound routing
+_orig_getaddrinfo = socket.getaddrinfo
+def _getaddrinfo_ipv4(*args, **kwargs):
+    responses = _orig_getaddrinfo(*args, **kwargs)
+    ipv4_responses = [r for r in responses if r[0] == socket.AF_INET]
+    return ipv4_responses if ipv4_responses else responses
+socket.getaddrinfo = _getaddrinfo_ipv4
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
@@ -12,26 +23,23 @@ from .config import BASE_DIR, settings
 from .database import init_db
 from .routers import api, auth
 
+# Initialize Datasette for visual DB exploration if using SQLite
+ds = None
+if settings.database_url.startswith("sqlite"):
+    from datasette.app import Datasette
+    db_path = settings.database_url.replace("sqlite:///", "")
+    if not db_path.startswith("/") and ":" not in db_path:
+        db_path_abs = str(BASE_DIR / db_path)
+    else:
+        db_path_abs = db_path
 
-import os
-from datasette.app import Datasette
-
-# Initialize Datasette for visual DB exploration
-db_path = settings.database_url.replace("sqlite:///", "")
-if not db_path.startswith("/") and ":" not in db_path:
-    # Relative path, make it absolute relative to BASE_DIR
-    db_path_abs = str(BASE_DIR / db_path)
-else:
-    db_path_abs = db_path
-
-# Create the Datasette instance with the correct base path
-ds = Datasette(
-    [db_path_abs],
-    settings={
-        "base_url": "/db-explorer/",
-        "template_debug": True if not os.getenv("PROD") else False
-    }
-)
+    ds = Datasette(
+        [db_path_abs],
+        settings={
+            "base_url": "/db-explorer/",
+            "template_debug": True if not os.getenv("PROD") else False
+        }
+    )
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -49,15 +57,23 @@ app = FastAPI(
 
 @app.get("/healthz", include_in_schema=False)
 async def health_check():
-    return {"status": "ok"}
+    db_status = "ok"
+    try:
+        from sqlalchemy import text
+        from .database import engine
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+    return {"status": "ok", "database": db_status}
 
 # ── Database Explorer (Native ASGI Mount) ───────────────────────────────
-# This is the most robust way to integrate Datasette: no proxy, no extra ports.
-app.mount("/db-explorer", ds.app())
+if ds:
+    app.mount("/db-explorer", ds.app())
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
