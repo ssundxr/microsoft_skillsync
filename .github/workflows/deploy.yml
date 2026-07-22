@@ -23,7 +23,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build --build-arg GITHUB_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }} -t ${{ secrets.ACR_LOGIN_SERVER }}/skillsync:latest .
+          docker build --build-arg GITHUB_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }} --build-arg VITE_GOOGLE_CLIENT_ID=695890962347-dujf19o8p5oc67ivto31t51pcps1h32v.apps.googleusercontent.com -t ${{ secrets.ACR_LOGIN_SERVER }}/skillsync:latest .
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/skillsync:latest
 
       - name: Log in to Azure
