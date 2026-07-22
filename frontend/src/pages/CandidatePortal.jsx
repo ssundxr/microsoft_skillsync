@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { cApi } from '../api/candidateClient'
 import TopNav from '../components/TopNav'
+import { GoogleLogin } from '@react-oauth/google'
 
 export default function CandidatePortal({ initialView }) {
   const navigate = useNavigate()
@@ -76,6 +77,17 @@ export default function CandidatePortal({ initialView }) {
     }
   }
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await cApi.googleAuth(credentialResponse.credential)
+      localStorage.setItem('candidate_token', res.access_token)
+      localStorage.setItem('candidate_user', JSON.stringify(res.user))
+      navigate('/candidate/dashboard')
+    } catch (err) {
+      setError('Google Sign-In failed: ' + err.message)
+    }
+  }
+
   const handleLogout = () => {
     localStorage.removeItem('candidate_token')
     localStorage.removeItem('candidate_user')
@@ -86,11 +98,11 @@ export default function CandidatePortal({ initialView }) {
     <div className="split-layout">
       {/* Left Branding Side */}
       <div className="split-left">
-         <div className="branding">Seek<span>ATS</span></div>
+         <div className="branding">Skill<span>Sync</span></div>
          <div className="split-left-content">
             <h2>Candidate<br/>Experience Portal</h2>
             <p style={{ opacity: 0.9, lineHeight: 1.6, maxWidth: 300, fontSize: 16 }}>
-              Apply for your dream roles, take smart assessments, and track your global placement journey.
+              Apply for your dream roles and track your global placement journey.
             </p>
          </div>
       </div>
@@ -99,7 +111,7 @@ export default function CandidatePortal({ initialView }) {
       <div className="split-right">
         <div className="login-form-wrap">
           <h1>{view === 'login' ? 'Candidate Login' : 'Create Account'}</h1>
-          <p className="sub">{view === 'login' ? 'Access your applications and assessments.' : 'Join to apply for open roles.'}</p>
+          <p className="sub">{view === 'login' ? 'Access your applications.' : 'Join to apply for open roles.'}</p>
           
           {error && <div className="login-error">{error}</div>}
           
@@ -140,6 +152,14 @@ export default function CandidatePortal({ initialView }) {
             <button className="btn btn-primary btn-lg w-full mt-4" style={{ justifyContent: 'center' }}>
               {view === 'login' ? 'Sign In' : (otpSent ? 'Verify & Register' : 'Request OTP')}
             </button>
+            
+            <div className="mt-4" style={{ display: 'flex', justifyContent: 'center' }}>
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => setError('Google Sign-In failed')}
+                useOneTap
+              />
+            </div>
           </form>
           
           <div className="mt-6 text-center text-sm">
@@ -180,16 +200,6 @@ export default function CandidatePortal({ initialView }) {
                   <div>
                     <div style={{ fontWeight: 600, fontSize: 16 }}>Application #{app.id} (Job ID: {app.job_post_id})</div>
                     <div className="text-muted text-sm mt-1">Status: <span style={{ textTransform: 'uppercase', fontSize: 11, fontWeight: 700 }}>{app.status.replace('_', ' ')}</span></div>
-                  </div>
-                  <div>
-                    {app.status === 'assessment_sent' && app.assessment_attempt && (
-                      <button className="btn btn-primary" onClick={() => navigate(`/candidate/assessment/${app.assessment_attempt.id}`)}>
-                        Take Assessment
-                      </button>
-                    )}
-                    {app.status === 'assessment_completed' && app.assessment_attempt && (
-                       <span className="badge badge-published">Evaluation Pending</span>
-                    )}
                   </div>
                 </div>
               ))

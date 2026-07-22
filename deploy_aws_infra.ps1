@@ -65,7 +65,7 @@ $Subnets = $SubnetIdsString -split '\s+'
 Write-Host "Detected Subnets: ($($Subnets -join ', '))"
 
 # Create Security Group for ECS Tasks
-$EcsSgName = "seekats-ecs-sg"
+$EcsSgName = "skillsync-ecs-sg"
 $EcsSgId = ""
 try {
     $EcsSgId = (aws ec2 describe-security-groups --filters "Name=group-name,Values=$EcsSgName" "Name=vpc-id,Values=$VpcId" --query "SecurityGroups[0].GroupId" --output text).Trim()
@@ -73,7 +73,7 @@ try {
 
 if ($EcsSgId -eq "None" -or -not $EcsSgId) {
     Write-Host "Creating ECS Security Group..." -ForegroundColor Yellow
-    $EcsSgId = (aws ec2 create-security-group --group-name $EcsSgName --description "Security Group for SeekATS ECS Task" --vpc-id $VpcId --query "GroupId" --output text).Trim()
+    $EcsSgId = (aws ec2 create-security-group --group-name $EcsSgName --description "Security Group for SkillSync ECS Task" --vpc-id $VpcId --query "GroupId" --output text).Trim()
 } else {
     Write-Host "ECS Security Group already exists: $EcsSgId"
 }
@@ -84,7 +84,7 @@ try {
 } catch {}
 
 # Create Security Group for EFS
-$EfsSgName = "seekats-efs-sg"
+$EfsSgName = "skillsync-efs-sg"
 $EfsSgId = ""
 try {
     $EfsSgId = (aws ec2 describe-security-groups --filters "Name=group-name,Values=$EfsSgName" "Name=vpc-id,Values=$VpcId" --query "SecurityGroups[0].GroupId" --output text).Trim()
@@ -92,7 +92,7 @@ try {
 
 if ($EfsSgId -eq "None" -or -not $EfsSgId) {
     Write-Host "Creating EFS Security Group..." -ForegroundColor Yellow
-    $EfsSgId = (aws ec2 create-security-group --group-name $EfsSgName --description "Security Group for SeekATS EFS" --vpc-id $VpcId --query "GroupId" --output text).Trim()
+    $EfsSgId = (aws ec2 create-security-group --group-name $EfsSgName --description "Security Group for SkillSync EFS" --vpc-id $VpcId --query "GroupId" --output text).Trim()
     # Allow inbound NFS (2049) from ECS Task Security Group
     aws ec2 authorize-security-group-ingress --group-id $EfsSgId --protocol tcp --port 2049 --source-group $EcsSgId | Out-Null
 } else {
@@ -100,7 +100,7 @@ if ($EfsSgId -eq "None" -or -not $EfsSgId) {
 }
 
 Write-Host "`n--- 4. Setting up Persistent Storage (AWS EFS) ---" -ForegroundColor Cyan
-$EfsToken = "seekats-efs-token"
+$EfsToken = "skillsync-efs-token"
 $FileSystemId = ""
 try {
     $FileSystemId = (aws efs describe-file-systems --creation-token $EfsToken --query "FileSystems[0].FileSystemId" --output text).Trim()
@@ -108,7 +108,7 @@ try {
 
 if ($FileSystemId -eq "None" -or -not $FileSystemId) {
     Write-Host "Creating Amazon EFS file system..." -ForegroundColor Yellow
-    $FileSystemId = (aws efs create-file-system --creation-token $EfsToken --tags Key=Name,Value=seekats-efs --query "FileSystemId" --output text).Trim()
+    $FileSystemId = (aws efs create-file-system --creation-token $EfsToken --tags Key=Name,Value=skillsync-efs --query "FileSystemId" --output text).Trim()
 } else {
     Write-Host "Amazon EFS already exists: $FileSystemId"
 }
@@ -184,7 +184,7 @@ if (-not $ExecRoleArn) {
 }
 
 # Task Role (allows containers to write to EFS)
-$TaskRoleName = "ecsTaskRole-seekats"
+$TaskRoleName = "ecsTaskRole-skillsync"
 $TaskRoleArn = ""
 try {
     $TaskRoleArn = (aws iam get-role --role-name $TaskRoleName --query "Role.Arn" --output text).Trim()
@@ -324,7 +324,7 @@ if (-not $PublicIp -or $PublicIp -eq "None") {
 }
 
 Write-Host "`n==========================================================" -ForegroundColor Green
-Write-Host "       🚀 SEEKATS DEPLOYED SUCCESSFULLY TO AWS! 🚀" -ForegroundColor Green
+Write-Host "       🚀 SKILLSYNC DEPLOYED SUCCESSFULLY TO AWS! 🚀" -ForegroundColor Green
 Write-Host "==========================================================" -ForegroundColor Green
 Write-Host "Task is running in ECS Fargate."
 Write-Host "Persistent Database/Uploads hosted on Amazon EFS."

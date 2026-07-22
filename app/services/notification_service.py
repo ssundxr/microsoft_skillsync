@@ -21,7 +21,7 @@ class NotificationService:
                         "to": [{"address": email}],
                     },
                     "content": {
-                        "subject": "Your SeekATS Candidate OTP",
+                        "subject": "Your SkillSync Candidate OTP",
                         "plainText": f"Welcome to the portal! Your OTP is: {otp}\n\nPlease enter this code to verify your account.",
                     }
                 }
@@ -48,7 +48,7 @@ class NotificationService:
                         
                     client = Client(tw_sid, tw_token)
                     client.messages.create(
-                        body=f"Your SeekATS OTP is: {otp}",
+                        body=f"Your SkillSync OTP is: {otp}",
                         from_=tw_phone,
                         to=phone
                     )
@@ -80,12 +80,12 @@ class NotificationService:
                         "subject": f"Required: Assessment Access Code for {job_title}",
                         "plainText": (
                             f"Hi {name},\n\n"
-                            f"Thanks for applying for the {job_title} position at SeekATS. We are excited to proceed with your candidacy.\n\n"
+                            f"Thanks for applying for the {job_title} position at SkillSync. We are excited to proceed with your candidacy.\n\n"
                             f"To move forward, please use the following Proctor Code to unlock your assessment:\n"
                             f"CODE: {code}\n\n"
                             "Hope you do well on the assessment! If you encounter any technical issues, please reach out to our support team.\n\n"
                             "Best regards,\n"
-                            "The SeekATS Team"
+                            "The SkillSync Team"
                         ),
                     }
                 }

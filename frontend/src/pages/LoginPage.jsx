@@ -29,14 +29,14 @@ export default function LoginPage() {
     <div className="split-layout">
       {/* Left Branding Side */}
       <div className="split-left">
-         <div className="branding">Seek<span>ATS</span></div>
+         <div className="branding">Skill<span>Sync</span></div>
          <div className="split-left-content">
-            <h2>Welcome to the<br/>SeekATS Hub</h2>
+            <h2>Welcome to the<br/>SkillSync Hub</h2>
             <p style={{ opacity: 0.9, lineHeight: 1.6, maxWidth: 300, fontSize: 16 }}>
               The premium platform for assessing, shortlisting, and hiring the best global talent seamlessly.
             </p>
          </div>
-         <div style={{ opacity: 0.5, fontSize: 13 }}>© 2026 SeekATS Enterprise Solutions</div>
+         <div style={{ opacity: 0.5, fontSize: 13 }}>© 2026 SkillSync Enterprise Solutions</div>
       </div>
 
       {/* Right Login Side */}

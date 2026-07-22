@@ -62,7 +62,7 @@ function HPTagInput({ value = [], onChange, suggestions = [], placeholder }) {
   )
 }
 
-const STEPS = ['Employer & Job', 'Salary & Candidate', 'Skills & Experience', 'Settings & Media']
+const STEPS = ['Employer & Job', 'Salary & Candidate', 'Skills & Experience']
 
 const EMPTY = {
   status: 'draft',
@@ -413,39 +413,6 @@ export default function PostJobPage() {
               </div>
             </div>
           </div>
-        </div>
-      )
-      case 3: return (
-        <div className="hp-step-content">
-          <div className="hp-section-module">
-            <div className="hp-module-header">
-              <span className="hp-module-num">07 //</span>
-              <h2 className="hp-module-title">Application Control</h2>
-            </div>
-            <div className="hp-field-grid">
-              <div className="hp-form-group hp-field-full">
-                <label className="hp-label">Intake Mode</label>
-                <select className="hp-select" value={F('application_mode')} onChange={e => set('application_mode', e.target.value)}>
-                  <option value="">Select mode</option>
-                  {ref?.application_modes?.map(m => <option key={m}>{m}</option>)}
-                </select>
-              </div>
-              <div className="hp-form-group hp-field-full">
-                <label className="hp-label">Recruiter Operational Instructions</label>
-                <textarea className="hp-textarea" value={F('recruiter_instructions')} onChange={e => set('recruiter_instructions', e.target.value)} placeholder="Specify logic for the AI diagnostic engine..." />
-              </div>
-              <div className="hp-form-group hp-field-full">
-                <label className="hp-label">Custom Diagnostic Questions</label>
-                <HPTagInput value={form.custom_questions} onChange={v => set('custom_questions', v)} placeholder='Define screening queries...' />
-                <span style={{ fontSize: 11, color: '#94a3b8', marginTop: 8, display: 'block' }}>Engine supports up to 6 custom diagnostic modules.</span>
-              </div>
-            </div>
-          </div>
-          {error && (
-            <div style={{ background: '#fef2f2', border: '1px solid #fee2e2', color: '#b91c1c', padding: 16, borderRadius: 8, fontSize: 13, fontWeight: 600 }}>
-              ERROR: {error}
-            </div>
-          )}
         </div>
       )
       default: return null

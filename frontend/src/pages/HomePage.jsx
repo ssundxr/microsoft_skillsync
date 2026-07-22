@@ -39,7 +39,7 @@ export default function HomePage() {
 
           <footer className="hp-footer-note">
             <span>PLATFORM.CORE.V1.0</span>
-            <span>© 2026 SEEKATS</span>
+            <span>© 2026 SKILLSYNC</span>
           </footer>
 
         </div>
@@ -48,19 +48,19 @@ export default function HomePage() {
       {/* ── Right Side: Engineering Specifications ────────────────────── */}
       <aside className="hp-brand-panel">
         <div className="hp-logo">
-          SEEK <span>ATS</span>
+          SKILL <span>SYNC</span>
         </div>
 
         <h1 className="hp-h1">
-          Unified Assessment<br />
-          Infrastructure
+          Unified Recruitment<br />
+          Platform
         </h1>
 
         <div className="hp-details">
           <div className="hp-detail-section">
             <span className="hp-detail-label">01 // CV Intelligence Engine</span>
             <ul className="hp-detail-list">
-              <li>ATS Score Checker & Diagnostic</li>
+              <li>Candidate Profiling & Ranking</li>
               <li>Career Pathing for Target Roles</li>
               <li>Certification Diagnostics & Links</li>
             </ul>
@@ -69,8 +69,8 @@ export default function HomePage() {
           <div className="hp-detail-section">
             <span className="hp-detail-label">02 // Recruitment Lifecycle</span>
             <ul className="hp-detail-list">
-              <li>Candidate Application & Tracking</li>
-              <li>High-Integrity Proctored Assessment Environment</li>
+              <li>End-to-End Application Tracking</li>
+              <li>Candidate Evaluation Pipeline</li>
             </ul>
           </div>
         </div>

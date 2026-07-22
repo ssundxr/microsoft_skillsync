@@ -1,5 +1,5 @@
 (function () {
-    const key = 'seekats-theme';
+    const key = 'skillsync-theme';
     const root = document.documentElement;
     const button = document.getElementById('themeToggle');
 

@@ -32,6 +32,7 @@ export const cApi = {
   requestOtp: (email, phone) => request('POST', '/api/candidate/auth/request-otp', { email, phone }),
   register: (email, otp, password, display_name) => request('POST', '/api/candidate/auth/register', { email, otp, password, display_name }),
   login: (email, password) => request('POST', '/api/candidate/auth/login', { email, password }),
+  googleAuth: (token) => request('POST', '/api/candidate/auth/google', { token }),
   listJobs: () => request('GET', '/api/candidate/jobs'),
   getApplications: () => request('GET', '/api/candidate/applications'),
   applyForJob: (job_post_id) => request('POST', '/api/candidate/applications', { job_post_id }),

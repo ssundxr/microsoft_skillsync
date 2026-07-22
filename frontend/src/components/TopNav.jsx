@@ -21,7 +21,7 @@ export default function TopNav() {
   return (
     <div className="top-nav">
       <div className="logo cursor-pointer" onClick={() => navigate(isCandidate ? '/candidate/dashboard' : '/admin/dashboard')} style={{ cursor: 'pointer' }}>
-        Seek<span>ATS</span>
+        Skill<span>Sync</span>
       </div>
       
       <div className="nav-links">

@@ -69,3 +69,46 @@ def login_candidate(body: CandidateLogin, db: Session = Depends(get_db)):
         access_token=token,
         user={"id": candidate.id, "email": candidate.email, "display_name": candidate.display_name, "role": "candidate"}
     )
+
+class GoogleAuthRequest(BaseModel):
+    token: str
+
+@router.post("/google", response_model=TokenResponse)
+def google_auth(body: GoogleAuthRequest, db: Session = Depends(get_db)):
+    try:
+        from google.oauth2 import id_token
+        from google.auth.transport import requests
+        
+        # Verify the token
+        client_id = settings.google_client_id
+        if not client_id:
+            raise HTTPException(status_code=500, detail="Google Client ID not configured.")
+            
+        idinfo = id_token.verify_oauth2_token(body.token, requests.Request(), client_id)
+        email = idinfo.get('email')
+        name = idinfo.get('name', 'Google User')
+        
+        if not email:
+            raise ValueError("Email not provided by Google.")
+            
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Invalid Google token: {str(e)}")
+        
+    candidate = db.scalar(select(Candidate).where(Candidate.email == email))
+    
+    if not candidate:
+        # Create new candidate
+        candidate = Candidate(
+            email=email,
+            password_hash=hash_password(str(random.random())), # random unused password
+            display_name=name
+        )
+        db.add(candidate)
+        db.commit()
+        db.refresh(candidate)
+        
+    access_token = create_candidate_access_token(candidate.id, settings.secret_key)
+    return TokenResponse(
+        access_token=access_token,
+        user={"id": candidate.id, "email": candidate.email, "display_name": candidate.display_name, "role": "candidate"}
+    )

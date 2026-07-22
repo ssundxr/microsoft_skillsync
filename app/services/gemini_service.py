@@ -138,7 +138,7 @@ def build_prompt(job: JobPost, assessment_config: dict) -> str:
         for item in question_plan
     )
 
-    return f"""You are an expert HR Assessment Designer for SeekATS, a professional recruitment platform.
+    return f"""You are an expert HR Assessment Designer for SkillSync, a professional recruitment platform.
 Generate a comprehensive, role-specific candidate assessment.
 
 JOB TITLE: {details.get("job_title", "N/A")}

@@ -452,7 +452,7 @@ export default function CVAnalyzerPage() {
                         onClick={() => toggleFix(i)}
                         style={{ 
                           padding: '12px', 
-                          background: isDone ? '#f0fdf4' : '#f0f9ff', 
+                          background: isDone ? '#f0fdf4' : '#ecfdf5', 
                           borderRadius: '8px',
                           cursor: 'pointer',
                           border: `1px solid ${isDone ? '#bbf7d0' : '#e0f2fe'}`,

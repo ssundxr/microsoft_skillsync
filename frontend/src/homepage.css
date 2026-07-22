@@ -1,18 +1,20 @@
 /* ════════════════════════════════════════════════════════════════════════════ */
-/*  SEEKATS — High-Precision Engineering Split                                 */
+/*  SKILLSYNC — High-Precision Engineering Split                               */
 /*  Focus on Symmetry, Information Hierarchy, and Technical Integrity         */
 /* ════════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  --hp-primary: #11a0b8;
-  --hp-text-dark: #0f172a;
+  --hp-primary: #047857; /* Deep Emerald */
+  --hp-primary-accent: #34D399; /* Emerald Accent */
+  --hp-text-dark: #111827; /* Rich Charcoal */
   --hp-text-light: #ffffff;
-  --hp-bg: #ffffff;
-  --hp-surface: #f8fafc;
-  --hp-border: #e2e8f0;
+  --hp-bg: #ECFDF5; /* Soft Emerald Background */
+  --hp-surface: #ffffff;
+  --hp-border: #BAE6FD;
   --hp-font-sans: 'Inter', -apple-system, sans-serif;
   --hp-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
+
 
 * {
   margin: 0;

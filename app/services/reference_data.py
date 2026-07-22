@@ -41,7 +41,7 @@ REFERENCE_DATA = {
         "Consulting Firm",
     ],
     "companies": [
-        "SeekATS Advisory",
+        "SkillSync Advisory",
         "TalentBridge Global",
         "BlueOrbit Tech",
         "Nexa Operations",

@@ -40,7 +40,7 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(
-    title="SeekATS Assessment Recruiter API",
+    title="SkillSync Assessment Recruiter API",
     description="Recruiter portal for job posting and AI-powered assessment generation",
     version="0.2.0",
     lifespan=lifespan,
@@ -103,7 +103,7 @@ else:
     @app.get("/", include_in_schema=False)
     async def root():
         return HTMLResponse(
-            "<h1 style='font-family:monospace'>SeekATS API running</h1>"
+            "<h1 style='font-family:monospace'>SkillSync API running</h1>"
             "<p>Build the frontend first:<br>"
             "<code>cd frontend && npm install && npm run build</code></p>"
             "<p><a href='/docs'>API Docs →</a></p>"

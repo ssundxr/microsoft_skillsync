@@ -190,7 +190,7 @@ def send_assessment(app_id: int, db: Session = Depends(get_db), _: AdminUser = D
     db.commit()
     
     from ..services.notification_service import NotificationService
-    job_title = app.job_post.job_details.get("job_title", "SeekATS Assessment")
+    job_title = app.job_post.job_details.get("job_title", "SkillSync Assessment")
     NotificationService.send_proctor_code(app.candidate.email, app.candidate.display_name, job_title, proctor_code)
     
     return {"message": "Assessment sent successfully to candidate.", "attempt_id": attempt.id}

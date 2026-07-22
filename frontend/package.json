@@ -1,5 +1,5 @@
 {
-  "name": "seekats-recruiter-frontend",
+  "name": "skillsync-recruiter-frontend",
   "private": true,
   "version": "0.2.0",
   "type": "module",
@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-oauth/google": "^0.13.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.0"

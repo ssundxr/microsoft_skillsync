@@ -1,14 +1,14 @@
-# SeekATS Azure Infrastructure Setup v4 (FINAL - Reusing CodeRAG-Group)
+# SkillSync Azure Infrastructure Setup v4 (FINAL - Reusing CodeRAG-Group)
 # Run this script with Docker Desktop RUNNING.
 
 $RESOURCE_GROUP = "CodeRAG-Group"
 $LOCATION = "centralindia"
 $APP_SERVICE_PLAN = "ASP-CodeRAGGroup-85ee"
 $SUFFIX = Get-Random -Maximum 99999
-$ACR_NAME = "seekatsacr$SUFFIX"
-$WEB_APP_NAME = "seekats-app-$SUFFIX"
-$STORAGE_ACCOUNT = "seekatsstore$SUFFIX"
-$FILE_SHARE = "seekatsdata"
+$ACR_NAME = "skillsyncacr$SUFFIX"
+$WEB_APP_NAME = "skillsync-app-$SUFFIX"
+$STORAGE_ACCOUNT = "skillsyncstore$SUFFIX"
+$FILE_SHARE = "skillsyncdata"
 
 Write-Host "--- 1. Checking Docker Readiness ---" -ForegroundColor Cyan
 docker version > $null 2>&1
@@ -35,11 +35,11 @@ $STORAGE_KEY = (az storage account keys list --resource-group $RESOURCE_GROUP --
 az storage share create --name $FILE_SHARE --account-name $STORAGE_ACCOUNT --account-key $STORAGE_KEY
 
 Write-Host "--- 6. Mapping Storage to Container ---" -ForegroundColor Cyan
-az webapp config storage-account add --resource-group $RESOURCE_GROUP --name $WEB_APP_NAME --custom-id "seekats-data-mount" --storage-type AzureFiles --share-name $FILE_SHARE --account-name $STORAGE_ACCOUNT --access-key $STORAGE_KEY --mount-path "/data"
+az webapp config storage-account add --resource-group $RESOURCE_GROUP --name $WEB_APP_NAME --custom-id "skillsync-data-mount" --storage-type AzureFiles --share-name $FILE_SHARE --account-name $STORAGE_ACCOUNT --access-key $STORAGE_KEY --mount-path "/data"
 
 Write-Host "--- 7. Generating GitHub Service Principal Credentials ---" -ForegroundColor Cyan
 $subId = (az account show --query "id" -o tsv)
-$spJson = (az ad sp create-for-rbac --name "seekats-github-deploy-final" --role contributor --scopes "/subscriptions/$subId/resourceGroups/$RESOURCE_GROUP" --sdk-auth)
+$spJson = (az ad sp create-for-rbac --name "skillsync-github-deploy-final" --role contributor --scopes "/subscriptions/$subId/resourceGroups/$RESOURCE_GROUP" --sdk-auth)
 
 Write-Host "--- INFRASTRUCTURE READY (REUSING CODERAG PLAN) ---" -ForegroundColor Green
 Write-Host "`nAdd these as SECRETS in GitHub (Settings > Secrets > Actions):" -ForegroundColor Yellow

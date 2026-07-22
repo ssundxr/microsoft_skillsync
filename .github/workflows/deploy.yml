@@ -23,8 +23,8 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker build --build-arg GITHUB_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }} -t ${{ secrets.ACR_LOGIN_SERVER }}/seekats:latest .
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/seekats:latest
+          docker build --build-arg GITHUB_TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }} -t ${{ secrets.ACR_LOGIN_SERVER }}/skillsync:latest .
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/skillsync:latest
 
       - name: Log in to Azure
         uses: azure/login@v2
@@ -35,7 +35,7 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
-          images: ${{ secrets.ACR_LOGIN_SERVER }}/seekats:latest
+          images: ${{ secrets.ACR_LOGIN_SERVER }}/skillsync:latest
 
       - name: Post-Deployment Config
         run: |

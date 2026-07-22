@@ -20,7 +20,7 @@
       ],
       "environment": [
         { "name": "PORT", "value": "80" },
-        { "name": "APP_NAME", "value": "SeekATS Assessment Recruiter" },
+        { "name": "APP_NAME", "value": "SkillSync Assessment Recruiter" },
         { "name": "ADMIN_USERNAME", "value": "admin" },
         { "name": "ADMIN_PASSWORD", "value": "Admin@123" },
         { "name": "ADMIN_DISPLAY_NAME", "value": "Assessment Admin" },

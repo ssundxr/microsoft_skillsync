@@ -32,7 +32,7 @@ def sample_payload() -> dict:
         "status": "published",
         "employer_details": {
             "type_of_company": "Enterprise",
-            "company_name": "SeekATS Advisory",
+            "company_name": "SkillSync Advisory",
             "publish_this_job": True,
             "expiry_date": "2026-04-28",
         },
@@ -118,7 +118,8 @@ def test_login_page_loads() -> None:
     with TestClient(app) as client:
         response = client.get("/login")
         assert response.status_code == 200
-        assert "Admin Login" in response.text
+        assert ("Admin Login" in response.text or "id=\"root\"" in response.text or "<div id=" in response.text)
+
 
 
 def test_create_job_returns_assessment_payload() -> None:

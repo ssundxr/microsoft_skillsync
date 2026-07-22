@@ -16,19 +16,19 @@ $SubnetIdsString = (aws ec2 describe-subnets --filters "Name=vpc-id,Values=$VpcI
 $Subnets = $SubnetIdsString -split '\s+'
 
 # Create ALB Security Group
-$AlbSgName = "seekats-alb-sg"
+$AlbSgName = "skillsync-alb-sg"
 $AlbSgId = ""
 try {
     $AlbSgId = (aws ec2 describe-security-groups --filters "Name=group-name,Values=$AlbSgName" "Name=vpc-id,Values=$VpcId" --query "SecurityGroups[0].GroupId" --output text).Trim()
 } catch {}
 if ($AlbSgId -eq "None" -or -not $AlbSgId) {
     Write-Host "Creating ALB Security Group..."
-    $AlbSgId = (aws ec2 create-security-group --group-name $AlbSgName --description "ALB SG for SeekATS" --vpc-id $VpcId --query "GroupId" --output text).Trim()
+    $AlbSgId = (aws ec2 create-security-group --group-name $AlbSgName --description "ALB SG for SkillSync" --vpc-id $VpcId --query "GroupId" --output text).Trim()
     aws ec2 authorize-security-group-ingress --group-id $AlbSgId --protocol tcp --port 80 --cidr 0.0.0.0/0 | Out-Null
 }
 
 # Allow ECS to receive traffic from ALB
-$EcsSgId = (aws ec2 describe-security-groups --filters "Name=group-name,Values=seekats-ecs-sg" "Name=vpc-id,Values=$VpcId" --query "SecurityGroups[0].GroupId" --output text).Trim()
+$EcsSgId = (aws ec2 describe-security-groups --filters "Name=group-name,Values=skillsync-ecs-sg" "Name=vpc-id,Values=$VpcId" --query "SecurityGroups[0].GroupId" --output text).Trim()
 if ($EcsSgId -and $EcsSgId -ne "None") {
     try {
         aws ec2 authorize-security-group-ingress --group-id $EcsSgId --protocol tcp --port 80 --source-group $AlbSgId | Out-Null
@@ -36,7 +36,7 @@ if ($EcsSgId -and $EcsSgId -ne "None") {
 }
 
 # Create ALB
-$AlbName = "seekats-alb"
+$AlbName = "skillsync-alb"
 $AlbArn = ""
 try {
     $AlbArn = (aws elbv2 describe-load-balancers --names $AlbName --query "LoadBalancers[0].LoadBalancerArn" --output text).Trim()
@@ -49,7 +49,7 @@ $AlbDns = (aws elbv2 describe-load-balancers --load-balancer-arns $AlbArn --quer
 Write-Host "ALB DNS: $AlbDns"
 
 # Create Target Group
-$TgName = "seekats-tg"
+$TgName = "skillsync-tg"
 $TgArn = ""
 try {
     $TgArn = (aws elbv2 describe-target-groups --names $TgName --query "TargetGroups[0].TargetGroupArn" --output text).Trim()
@@ -101,7 +101,7 @@ try {
 
 # Setup API Gateway as HTTPS proxy (since CloudFront requires account verification on fresh accounts)
 Write-Host "Setting up Amazon API Gateway (HTTPS Proxy)..."
-$ApiName = "seekats-api"
+$ApiName = "skillsync-api"
 $ApiEndpoint = ""
 $Apis = aws apigatewayv2 get-apis --query "Items[?Name=='$ApiName'].ApiEndpoint" --output text
 if ($Apis -and $Apis -ne "None") {
