@@ -13,12 +13,16 @@ class Base(DeclarativeBase):
     pass
 
 
-engine_kwargs: dict = {"future": True}
+engine_kwargs: dict = {"future": True, "pool_pre_ping": True}
 
 if settings.database_url.startswith("sqlite"):
     engine_kwargs["connect_args"] = {"check_same_thread": False}
     if settings.database_url.endswith(":memory:"):
         engine_kwargs["poolclass"] = StaticPool
+else:
+    # For PostgreSQL: set a short connect timeout so startup never hangs
+    # waiting for an unreachable DB host (prevents Gunicorn worker crash-loop)
+    engine_kwargs["connect_args"] = {"connect_timeout": 5}
 
 engine = create_engine(settings.database_url, **engine_kwargs)
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False, class_=Session)
