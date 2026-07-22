@@ -1,94 +1,77 @@
-# Assessment Recruiter
+# Skill Sync (Unified Recruitment Platform)
 
-FastAPI-based admin console for recruiter job posting and assessment generation prep.
+Skill Sync is a modern, unified recruitment platform built to streamline the candidate experience and recruiter operations. It provides a comprehensive dashboard for creating job postings, an intuitive portal for candidates to apply and track applications, and an AI-powered CV Analyzer.
 
-## What It Includes
+## Key Features
 
-- Basic admin login with seeded credentials
-- Professional recruiter dashboard UI
-- Full job post intake flow based on your screenshots
-- Company logo + multiple job photo uploads
-- SQLite persistence for saved jobs
-- Assessment blueprint builder for screening, difficulty, competencies, question mix, time, and weightage
-- API response that returns a structured JSON payload ready to send to an external assessment-generation service
+- **Recruiter Portal**: Post strategic jobs, track active requisitions, and manage applications via a professional UI.
+- **Candidate Portal**: Candidates can log in (Email/OTP or Google OAuth) to view applications and browse recommended jobs.
+- **CV Intelligence Engine**: Candidates can upload their CV to get AI-powered insights, capability mapping, and course recommendations powered by Gemini AI.
+- **Google OAuth Integration**: Candidates can seamlessly sign up and log in using their Google accounts.
+- **Modern Tech Stack**: React/Vite frontend with a robust FastAPI backend backed by Supabase PostgreSQL.
 
-## Stack
+## Architecture & Tech Stack
 
-- FastAPI
-- Jinja2 templates
-- SQLAlchemy + SQLite
-- Vanilla JavaScript
-- Custom CSS
+### Frontend
+- **Framework**: React.js with Vite
+- **Styling**: Custom modern CSS (Vanilla)
+- **Auth**: `@react-oauth/google` for Google Sign-In
+- **Routing**: `react-router-dom`
+
+### Backend
+- **Framework**: FastAPI (Python)
+- **Database**: PostgreSQL (via Supabase) with SQLAlchemy ORM
+- **AI Integration**: Google GenAI (`google-genai`)
+- **Authentication**: JWT-based session handling
 
 ## Run Locally
 
-1. Create a virtual environment and install dependencies.
-2. Start the app:
-
+### 1. Backend Setup (FastAPI)
+Navigate to the root directory and create a virtual environment:
 ```bash
-uvicorn app.main:app --reload
+python -m venv venv
+# On Windows
+.\venv\Scripts\activate
+# On MacOS/Linux
+source venv/bin/activate
+```
+Install the dependencies:
+```bash
+pip install -r requirements.txt
+```
+Copy `.env.example` to `.env` and fill in your credentials:
+- `SUPABASE_URL` and `DATABASE_URL`
+- `GEMINI_API_KEY`
+- `NEXT_PUBLIC_GOOGLE_CLIENT_ID` / `VITE_GOOGLE_CLIENT_ID`
+
+Start the FastAPI server (it runs on port 8000 by default):
+```bash
+uvicorn app.main:app --reload --port 8000
 ```
 
-3. Open `http://127.0.0.1:8000`
+### 2. Frontend Setup (React/Vite)
+Navigate to the `frontend/` directory:
+```bash
+cd frontend
+npm install
+```
+Start the Vite development server (it runs on port 5173 by default):
+```bash
+npm run dev
+```
+
+### 3. Access the Portals
+- **Recruiter Portal (Admin)**: `http://localhost:5173/admin/login`
+- **Candidate Portal**: `http://localhost:5173/candidate/login`
 
 ## Default Admin Credentials
-
-- Username: `admin`
-- Password: `Admin@123`
-
-You can override these with environment variables:
-
-- `ADMIN_USERNAME`
-- `ADMIN_PASSWORD`
-- `ADMIN_DISPLAY_NAME`
-- `SECRET_KEY`
-- `DATABASE_URL`
-- `UPLOAD_DIR`
-
-## Key Routes
-
-- `GET /login`
-- `GET /dashboard`
-- `POST /auth/login`
-- `POST /auth/logout`
-- `POST /api/jobs`
-- `GET /api/jobs`
-- `GET /api/jobs/{job_id}`
-- `GET /api/jobs/{job_id}/assessment-payload`
-
-## Request Pattern For Job Creation
-
-`POST /api/jobs` expects `multipart/form-data`:
-
-- `payload`: JSON string with recruiter/job/assessment data
-- `company_logo`: optional image file
-- `job_photos`: optional repeated image files
-
-## Returned Payload Shape
-
-The API returns:
-
-- `job`: the saved job record
-- `assessment_payload`: the external-request JSON
-
-The generated payload is grouped into:
-
-- `assessment_request.employer`
-- `assessment_request.job_posting`
-- `assessment_request.pre_assessment_screening`
-- `assessment_request.ai_generation_context`
-- `assessment_request.assessment_blueprint`
-- `assessment_request.recruiter_instructions`
-- `assessment_request.audit`
-
-## Assumption
-
-No external API schema was provided, so the app produces a clean, explicit payload contract that can be mapped directly to a downstream assessment-generation API. If you have that target schema later, we can swap the mapper in `app/services/payload_builder.py` without redesigning the UI.
+For testing the Recruiter Portal locally:
+- **Username**: `admin`
+- **Password**: `Admin@123`
+*(Can be overridden in `.env` via `ADMIN_USERNAME` and `ADMIN_PASSWORD`)*
 
 ## Tests
-
-Run:
-
+To run backend unit and integration tests:
 ```bash
 pytest
 ```
