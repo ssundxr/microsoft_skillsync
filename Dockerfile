@@ -26,12 +26,12 @@ COPY app/ ./app/
 COPY cv_analyzer_api/ ./cv_analyzer_api/
 COPY --from=build-frontend /frontend-build/dist ./frontend/dist
 
-# Expose port 80 for App Service
-EXPOSE 80
+# Expose port 8080 for App Service
+EXPOSE 8080
 
 # Set environment variables for production
 ENV PYTHONUNBUFFERED=1
-ENV PORT=80
+ENV PORT=8080
 
 # Start Gunicorn with Uvicorn workers
-CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "120", "--bind", "0.0.0.0:80", "app.main:app"]
+CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "120", "--bind", "0.0.0.0:8080", "app.main:app"]
