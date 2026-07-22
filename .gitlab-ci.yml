@@ -15,7 +15,7 @@ build_and_push:
   only:
     - main
   before_script:
-    - docker login $ACR_LOGIN_SERVER -u $ACR_USERNAME -p $ACR_PASSWORD
+    - echo "$ACR_PASSWORD" | docker login $ACR_LOGIN_SERVER -u $ACR_USERNAME --password-stdin
   script:
     - docker build -t $ACR_LOGIN_SERVER/skillsync:$CI_COMMIT_SHA -t $ACR_LOGIN_SERVER/skillsync:latest .
     - docker push $ACR_LOGIN_SERVER/skillsync:$CI_COMMIT_SHA
