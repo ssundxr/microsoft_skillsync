@@ -34,4 +34,4 @@ ENV PYTHONUNBUFFERED=1
 ENV PORT=80
 
 # Start Gunicorn with Uvicorn workers
-CMD gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:80
+CMD ["gunicorn", "-w", "1", "-k", "uvicorn.workers.UvicornWorker", "--timeout", "120", "--bind", "0.0.0.0:80", "app.main:app"]
