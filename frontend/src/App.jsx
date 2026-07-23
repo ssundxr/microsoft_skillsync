@@ -11,6 +11,7 @@ import ProctoredAssessment from './pages/ProctoredAssessment'
 import ReportViewPage from './pages/ReportViewPage'
 import CVAnalyzerPage from './pages/CVAnalyzerPage'
 import AdminCandidatesPage from './pages/AdminCandidatesPage'
+import AnalyticsPage from './pages/AnalyticsPage'
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem('auth_token')
@@ -54,10 +55,12 @@ export default function App() {
         <Route path="/admin/login" element={<LoginPage />} />
         <Route path="/admin/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
         <Route path="/admin/candidates" element={<PrivateRoute><AdminCandidatesPage /></PrivateRoute>} />
+        <Route path="/admin/analytics" element={<PrivateRoute><AnalyticsPage /></PrivateRoute>} />
         <Route path="/admin/post-job" element={<PrivateRoute><PostJobPage /></PrivateRoute>} />
         <Route path="/admin/assessment/:jobId" element={<PrivateRoute><AssessmentPage /></PrivateRoute>} />
         <Route path="/admin/job/:jobId/applications" element={<PrivateRoute><ApplicationsPage /></PrivateRoute>} />
         <Route path="/admin/report/:appId" element={<PrivateRoute><ReportViewPage /></PrivateRoute>} />
+
         
         {/* Candidate Routes */}
         <Route path="/candidate/login" element={<CandidatePortal initialView="login" />} />

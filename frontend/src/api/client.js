@@ -46,4 +46,6 @@ export const api = {
   sendAssessment: (appId) => request('POST', `/api/applications/${appId}/send-assessment`),
   getRecentProctorCodes: () => request('GET', '/api/recent-proctor-codes'),
   listCandidates: () => request('GET', '/api/candidates'),
+  getPowerBiToken: () => request('GET', '/api/admin/powerbi-token'),
 }
+
