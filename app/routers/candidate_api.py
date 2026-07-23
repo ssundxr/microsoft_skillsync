@@ -138,3 +138,34 @@ async def submit_assessment(attempt_id: int, body: AssessmentSubmit, candidate: 
     db.refresh(attempt)
     
     return {"message": "Assessment submitted and evaluated successfully.", "scores": score_details}
+
+
+from fastapi import File, UploadFile
+from ..services.storage import save_resume_upload
+
+@router.post("/upload-resume")
+async def upload_resume(
+    file: UploadFile = File(...),
+    candidate: Candidate = Depends(require_candidate_api),
+    db: Session = Depends(get_db),
+):
+    """
+    Upload candidate resume to SharePoint CVs library and local storage.
+    Updates candidate's resume_url in database.
+    """
+    if not file or not file.filename:
+        raise HTTPException(status_code=400, detail="No file uploaded.")
+
+    upload_result = await save_resume_upload(file, folder_path="CVs")
+
+    candidate.resume_url = upload_result["resume_url"]
+    db.commit()
+    db.refresh(candidate)
+
+    return {
+        "message": "Resume uploaded successfully to SharePoint.",
+        "candidate_id": candidate.id,
+        "resume_url": candidate.resume_url,
+        "sharepoint_id": upload_result.get("sharepoint_id"),
+        "sharepoint_web_url": upload_result.get("sharepoint_web_url"),
+    }

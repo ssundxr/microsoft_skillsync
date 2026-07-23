@@ -227,3 +227,88 @@ def get_recent_proctor_codes(db: Session = Depends(get_db), _: AdminUser = Depen
         })
     
     return {"items": results}
+
+@router.get("/candidates")
+def list_candidates(db: Session = Depends(get_db), _: AdminUser = Depends(require_admin_api)):
+    from ..models import Candidate
+    from ..schemas import CandidateResponse
+    stmt = select(Candidate).order_by(Candidate.created_at.desc())
+    candidates = db.scalars(stmt).all()
+    return {"items": [CandidateResponse.model_validate(c) for c in candidates]}
+
+@router.post("/candidates/{candidate_id}/analyze-cv")
+async def admin_analyze_cv(
+    candidate_id: int,
+    payload: dict,
+    db: Session = Depends(get_db),
+    _: AdminUser = Depends(require_admin_api)
+):
+    from ..models import Candidate, JobPost
+    candidate = db.get(Candidate, candidate_id)
+    if not candidate:
+        raise HTTPException(status_code=404, detail="Candidate not found")
+        
+    job_id = payload.get("job_id")
+    if not job_id:
+        raise HTTPException(status_code=400, detail="job_id is required")
+        
+    job = db.get(JobPost, job_id)
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+        
+    # Build resume text from profile details
+    resume_text = f"Candidate Name: {candidate.display_name}\n\n"
+    if candidate.profile_details:
+        for k, v in candidate.profile_details.items():
+            resume_text += f"=== {k} ===\n{v}\n\n"
+            
+    # Build job text
+    jd = job.job_details
+    job_text = f"Title: {jd.get('job_title')}\nIndustry: {jd.get('industry')}\nProfile: {jd.get('desired_candidate_profile')}"
+    skills = job.skills_requirement.get("it_skills", []) if job.skills_requirement else []
+    
+    prompt = f"""You are an Expert Technical Recruiter analyzing a candidate's fit for a specific job post.
+You must provide a ground-truth evaluation of the candidate. Do not sugar-coat.
+
+JOB REQUIREMENTS:
+{job_text}
+Required Skills: {', '.join(skills)}
+
+CANDIDATE RESUME/PROFILE:
+{resume_text}
+
+Analyze the candidate against the job requirements.
+Return ONLY a valid JSON object with the following structure (no markdown fences, just JSON):
+{{
+  "match_score_percentage": 0,
+  "summary": "Brief 2-3 sentence summary of fit",
+  "strengths": ["strength 1", "strength 2"],
+  "weaknesses_or_gaps": ["gap 1", "gap 2"],
+  "recommendation": "Strong Hire / Hire / Weak Hire / Do Not Hire"
+}}
+"""
+    try:
+        from ..services.gemini_service import genai, resolve_gemini_model, parse_gemini_json
+        import os
+        import asyncio
+        api_key = os.getenv("GEMINI_API_KEY")
+        genai.configure(api_key=api_key)
+        model_name = resolve_gemini_model()
+        model = genai.GenerativeModel(model_name)
+        response = await asyncio.to_thread(
+            model.generate_content,
+            prompt,
+            generation_config=genai.GenerationConfig(temperature=0.2, response_mime_type="application/json")
+        )
+        return parse_gemini_json(response.text)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/admin/powerbi-token")
+async def get_powerbi_token(_: AdminUser = Depends(require_admin_api)):
+    """
+    Securely returns PowerBI embed token, embed URL, and report ID to authenticated admins.
+    Secrets, credentials, and tenant/workspace IDs are NEVER exposed to the frontend.
+    """
+    from ..services.powerbi_service import get_powerbi_embed_token
+    return await get_powerbi_embed_token()

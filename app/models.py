@@ -28,6 +28,8 @@ class Candidate(Base):
     email: Mapped[str] = mapped_column(String(120), unique=True, index=True)
     password_hash: Mapped[str] = mapped_column(String(255))
     display_name: Mapped[str] = mapped_column(String(120))
+    profile_details: Mapped[dict] = mapped_column(JSON, default=dict)
+    resume_url: Mapped[str | None] = mapped_column(String(255), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     applications: Mapped[list["JobApplication"]] = relationship(back_populates="candidate")

@@ -29,5 +29,6 @@ deploy_to_azure:
     - main
   script:
     - az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
-    - az webapp config container set --name $AZURE_WEBAPP_NAME --resource-group $AZURE_RESOURCE_GROUP --docker-custom-image-name $ACR_LOGIN_SERVER/skillsync:$CI_COMMIT_SHA --docker-registry-server-url https://$ACR_LOGIN_SERVER --docker-registry-server-user $ACR_USERNAME --docker-registry-server-password $ACR_PASSWORD
+    - az webapp config container set --name $AZURE_WEBAPP_NAME --resource-group $AZURE_RESOURCE_GROUP --docker-custom-image-name $ACR_LOGIN_SERVER/skillsync:$CI_COMMIT_SHA --docker-registry-server-url https://$ACR_LOGIN_SERVER --docker-registry-server-user $ACR_USERNAME --docker-registry-server-password "$ACR_PASSWORD"
+    - az webapp config appsettings set --name $AZURE_WEBAPP_NAME --resource-group $AZURE_RESOURCE_GROUP --settings "DOCKER_REGISTRY_SERVER_PASSWORD=$ACR_PASSWORD" "WEBSITES_PORT=80" "PORT=80"
     - az webapp restart --name $AZURE_WEBAPP_NAME --resource-group $AZURE_RESOURCE_GROUP

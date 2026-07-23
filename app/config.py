@@ -47,6 +47,11 @@ class Settings:
     db_password: str = ""
     google_client_id: str = ""
     gemini_api_key: str = ""
+    powerbi_client_id: str = ""
+    powerbi_client_secret: str = ""
+    powerbi_tenant_id: str = ""
+    powerbi_workspace_id: str = ""
+    powerbi_report_id: str = ""
 
 
 @lru_cache
@@ -94,7 +99,13 @@ def get_settings() -> Settings:
         db_password=db_password,
         google_client_id=os.getenv("NEXT_PUBLIC_GOOGLE_CLIENT_ID", ""),
         gemini_api_key=os.getenv("GEMINI_API_KEY", ""),
+        powerbi_client_id=os.getenv("POWERBI_CLIENT_ID", ""),
+        powerbi_client_secret=os.getenv("POWERBI_CLIENT_SECRET", ""),
+        powerbi_tenant_id=os.getenv("POWERBI_TENANT_ID", ""),
+        powerbi_workspace_id=os.getenv("POWERBI_WORKSPACE_ID", ""),
+        powerbi_report_id=os.getenv("POWERBI_REPORT_ID", ""),
     )
+
 
 
 settings = get_settings()

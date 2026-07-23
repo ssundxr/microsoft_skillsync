@@ -140,3 +140,40 @@ def test_create_job_returns_assessment_payload() -> None:
         assert body["job"]["assessment_number"].startswith("ASM")
         assert body["assessment_payload"]["assessment_request"]["job_posting"]["job_details"]["job_title"] == "Senior FastAPI Engineer"
         assert body["assessment_payload"]["assessment_request"]["assessment_blueprint"]["totals"]["question_count"] == 22
+
+
+def test_powerbi_token_endpoint_unauthorized() -> None:
+    with TestClient(app) as client:
+        response = client.get("/api/admin/powerbi-token")
+        assert response.status_code == 401
+
+
+def test_powerbi_token_endpoint_admin_authorized(monkeypatch) -> None:
+    with TestClient(app) as client:
+        login(client)
+
+        # Mock the powerbi service response
+        async def mock_get_embed_token():
+            return {
+                "embedToken": "mock_embed_token_123",
+                "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=mock_report_id",
+                "reportId": "mock_report_id",
+                "expiration": "2026-12-31T23:59:59Z"
+            }
+
+        from app.services import powerbi_service
+        monkeypatch.setattr(powerbi_service, "get_powerbi_embed_token", mock_get_embed_token)
+
+        response = client.get("/api/admin/powerbi-token")
+        assert response.status_code == 200
+        data = response.json()
+        assert "embedToken" in data
+        assert "embedUrl" in data
+        assert "reportId" in data
+        assert "expiration" in data
+
+        # Ensure no sensitive credentials leaked
+        for secret_key in ["client_id", "client_secret", "tenant_id", "workspace_id"]:
+            assert secret_key not in data
+            assert secret_key.upper() not in data
+
