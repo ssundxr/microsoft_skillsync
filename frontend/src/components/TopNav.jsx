@@ -42,6 +42,7 @@ export default function TopNav() {
         {!isCandidate && (
           <>
             <button className={location.pathname.includes('/post-job') ? 'active' : ''} onClick={() => navigate('/admin/post-job')}>Post Job</button>
+            <button className={location.pathname.includes('/analytics') ? 'active' : ''} onClick={() => navigate('/admin/analytics')}>Analytics</button>
             <button 
               className="mono" 
               style={{ opacity: 0.7, fontSize: '12px' }}
@@ -51,6 +52,7 @@ export default function TopNav() {
             </button>
           </>
         )}
+
       </div>
 
       <div className="flex items-center gap-4">
