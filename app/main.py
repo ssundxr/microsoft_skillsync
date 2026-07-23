@@ -109,13 +109,21 @@ if FRONTEND_DIST.exists():
     async def serve_react_app(full_path: str):
         file_path = FRONTEND_DIST / full_path
         if file_path.exists() and file_path.is_file():
-            return FileResponse(str(file_path))
-        
-        # If it's a request for an asset that doesn't exist, return 404 instead of index.html
+            response = FileResponse(str(file_path))
+            if file_path.name == "index.html":
+                response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+                response.headers["Pragma"] = "no-cache"
+                response.headers["Expires"] = "0"
+            return response
+
         if full_path.startswith("assets/") or full_path.startswith("static/"):
             raise HTTPException(status_code=404, detail="Asset not found")
 
-        return FileResponse(str(FRONTEND_DIST / "index.html"))
+        response = FileResponse(str(FRONTEND_DIST / "index.html"))
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+        return response
 else:
     @app.get("/", include_in_schema=False)
     async def root():
