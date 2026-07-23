@@ -10,9 +10,12 @@
   },
   "dependencies": {
     "@react-oauth/google": "^0.13.5",
+    "powerbi-client": "^2.22.3",
+    "powerbi-client-react": "^1.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.0"
+
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",

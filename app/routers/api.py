@@ -227,3 +227,14 @@ def get_recent_proctor_codes(db: Session = Depends(get_db), _: AdminUser = Depen
         })
     
     return {"items": results}
+
+
+@router.get("/admin/powerbi-token")
+async def get_powerbi_token(_: AdminUser = Depends(require_admin_api)):
+    """
+    Securely returns PowerBI embed token, embed URL, and report ID to authenticated admins.
+    Secrets, credentials, and tenant/workspace IDs are NEVER exposed to the frontend.
+    """
+    from ..services.powerbi_service import get_powerbi_embed_token
+    return await get_powerbi_embed_token()
+
