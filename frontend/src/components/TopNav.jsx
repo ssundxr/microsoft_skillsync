@@ -44,6 +44,7 @@ export default function TopNav() {
             <button className={location.pathname.includes('/candidates') ? 'active' : ''} onClick={() => navigate('/admin/candidates')}>Candidates</button>
             <button className={location.pathname.includes('/post-job') ? 'active' : ''} onClick={() => navigate('/admin/post-job')}>Post Job</button>
             <button className={location.pathname.includes('/analytics') ? 'active' : ''} onClick={() => navigate('/admin/analytics')}>Analytics</button>
+            <button className={location.pathname.includes('/sharepoint') ? 'active' : ''} onClick={() => navigate('/admin/sharepoint')}>SharePoint</button>
             <button 
               className="mono" 
               style={{ opacity: 0.7, fontSize: '12px' }}

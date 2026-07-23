@@ -149,6 +149,29 @@ class MediaAsset(BaseModel):
     stored_name: str
     content_type: str
     url: str
+    sharepoint_id: str | None = None
+    sharepoint_web_url: str | None = None
+
+
+class SharePointFileItem(BaseModel):
+    id: str
+    name: str
+    size: int | None = 0
+    web_url: str | None = None
+    download_url: str | None = None
+    created_at: str | None = None
+    folder: str | None = "CVs"
+
+
+class SharePointStatusResponse(BaseModel):
+    configured: bool
+    tenant_id: str | None = None
+    client_id: str | None = None
+    site_id: str | None = None
+    drive_id: str | None = None
+    folder_path: str = "CVs"
+    token_acquired: bool = False
+    message: str
 
 
 class Photos(BaseModel):

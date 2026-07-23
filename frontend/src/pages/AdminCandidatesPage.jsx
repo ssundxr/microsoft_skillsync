@@ -107,8 +107,10 @@ export default function AdminCandidatesPage() {
                       target="_blank"
                       rel="noreferrer"
                       className="btn btn-outline"
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
                     >
-                      <span className="icon">📄</span> Download CV
+                      <span>{selectedCandidate.resume_url.includes('sharepoint.com') || selectedCandidate.resume_url.includes('graph.microsoft.com') ? '📁' : '📄'}</span>
+                      <span>{selectedCandidate.resume_url.includes('sharepoint.com') ? 'View on SharePoint ↗' : 'Download CV'}</span>
                     </a>
                   )}
                 </div>

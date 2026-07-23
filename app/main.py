@@ -93,9 +93,10 @@ app.mount("/media", StaticFiles(directory=str(settings.upload_dir)), name="media
 app.include_router(auth.router)
 app.include_router(api.router)
 
-from .routers import candidate_auth, candidate_api
+from .routers import candidate_auth, candidate_api, sharepoint_api
 app.include_router(candidate_auth.router)
 app.include_router(candidate_api.router)
+app.include_router(sharepoint_api.router)
 
 from cv_analyzer_api.router import router as cv_analyzer_router
 app.include_router(cv_analyzer_router)
